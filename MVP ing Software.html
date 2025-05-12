@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>EcoMarket SPA - MVP DEMO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      max-width: 900px;
+      margin: 30px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2, h3 {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .hidden { display: none !important; }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .toolbar input, .toolbar select {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    .toolbar button {
+      padding: 6px 12px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background-color: #e0e0e0;
+    }
+    .new-product { background-color: #4CAF50; color: white; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th { background-color: #f0f0f0; }
+    .low-stock { color: #d9534f; font-weight: bold; }
+    .warning { color: #f0ad4e; }
+    .edit, .delete { margin: 0 5px; cursor: pointer; }
+    .edit { color: #5bc0de; }
+    .delete { color: #d9534f; }
+    .actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .actions button {
+      padding: 7px 16px;
+      border: none;
+      border-radius: 4px;
+      background: #e0e0e0;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s;
+    }
+    .actions .edit { background: #5bc0de; color: white; }
+    .actions .delete { background: #d9534f; color: white; }
+    .actions .back { background: #4CAF50; color: white; }
+    .actions .confirm { background: #4CAF50; color: white; }
+    .actions .cancel { background: #d9534f; color: white; }
+    .product-img {
+      width: 120px; height: 120px; background: #e0e0e0; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5em; color: #aaa; margin-right: 16px;
+    }
+    .desc {
+      margin-bottom: 18px;
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 6px;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+    }
+    .history-table th, .history-table td {
+      border: 1px solid #ccc;
+      padding: 7px 8px;
+      text-align: center;
+    }
+    .history-table th { background: #f0f0f0; }
+    .form-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 60vh;
+    }
+    .form-box {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.07);
+      padding: 24px 20px 18px 20px;
+    }
+    form label {
+      display: block;
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+    form input[type="text"],
+    form input[type="number"],
+    form select,
+    form textarea {
+      width: 100%;
+      padding: 7px 10px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1em;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+    form textarea {
+      resize: vertical;
+    }
+    form input[type="file"] {
+      margin-top: 6px;
+    }
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+    .form-actions button {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 4px;
+      background: #e0e0e0;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.2s;
+    }
+    .form-actions button[type="reset"] { background: #d9534f; color: white; }
+    .form-actions button[type="submit"] { background: #4CAF50; color: white; }
+    .required { color: #d9534f; margin-left: 2px; }
+    .alert-urgente {
+      color: #d9534f;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+    }
+    .alert-proximo {
+      color: #f0ad4e;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+    }
+    .phone { color: #e83e8c; font-size: 1.1em; margin-right: 4px; }
+    .summary {
+      background: #f9f9f9;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 1.05em;
+      margin-top: 10px;
+      text-align: left;
+    }
+    .logout-btn {
+      float: right;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      background: #d9534f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 14px;
+      cursor: pointer;
+    }
+    .user-info {
+      float: left;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      color: #555;
+      font-size: 1em;
+    }
+    .demo-info {
+      background: #e0f7fa;
+      color: #006064;
+      border: 1px solid #b2ebf2;
+      border-radius: 6px;
+      padding: 12px 18px;
+      margin-bottom: 18px;
+      font-size: 1.08em;
+      text-align: center;
+    }
+    @media (max-width: 700px) {
+      .container { padding: 10px; }
+      th, td { font-size: 0.95em; padding: 6px 4px; }
+      .toolbar { flex-direction: column; align-items: flex-start; }
+      .form-box { padding: 16px 6px 10px 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginView">
+    <div class="demo-info">
+      <b>DEMO MVP</b><br>
+      Usa estas credenciales de prueba:<br>
+      <b>Gerente:</b> gerente@ecomarket.cl / password123<br>
+      <b>Empleado:</b> empleado@ecomarket.cl / password123<br>
+      <span style="color:#d9534f;">Los datos no se guardan, todo es solo para demostración.</span>
+    </div>
+    <h2>EcoMarket SPA - Iniciar Sesión</h2>
+    <form id="loginForm">
+      <label>Correo electrónico<br>
+        <input type="email" id="loginEmail" required style="width:100%;padding:7px 10px;margin-top:4px;">
+      </label><br>
+      <label>Contraseña<br>
+        <input type="password" id="loginPassword" required style="width:100%;padding:7px 10px;margin-top:4px;">
+      </label><br>
+      <div class="form-actions">
+        <button type="submit"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+      </div>
+      <div id="loginError" style="color:#d9534f; margin-top:10px; display:none;">Credenciales incorrectas</div>
+    </form>
+  </div>
+
+  <div class="container hidden" id="mainView">
+    <div>
+      <span class="user-info" id="userInfo"></span>
+      <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+    </div>
+    <h2>EcoMarket SPA - Inventario</h2>
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="Buscar...">
+      <button onclick="showView('alertasView')"><i class="fas fa-bell"></i> Alertas</button>
+      <button class="new-product" id="btnNuevoProducto" onclick="abrirFormularioNuevo()"><i class="fas fa-plus"></i> Nuevo Producto</button>
+    </div>
+    <table id="productTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Valor (CLP)</th>
+          <th>Stock</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="container hidden" id="detalleView">
+    <div class="actions">
+      <button class="back" onclick="showView('mainView')"><i class="fas fa-arrow-left"></i> Volver</button>
+      <button class="edit" id="btnEditarDetalle" onclick="abrirFormularioEdicion(detalleProductoId)"><i class="fas fa-pen"></i> Editar</button>
+      <button class="delete" id="btnEliminarDetalle" onclick="eliminarProducto(detalleProductoId)"><i class="fas fa-trash"></i> Eliminar</button>
+    </div>
+    <h2>EcoMarket SPA - Detalle de Producto</h2>
+    <table class="product-table" id="detalleTable"></table>
+    <div class="desc" id="detalleDesc"></div>
+    <h3>Historial de movimientos</h3>
+    <table class="history-table" id="detalleHistorial"></table>
+  </div>
+
+  <div class="container hidden" id="formProductoView">
+    <div class="form-center">
+      <div class="form-box">
+        <div class="actions" style="margin-bottom:10px;">
+          <button class="back" onclick="showView('mainView')"><i class="fas fa-arrow-left"></i> Volver</button>
+        </div>
+        <h2 id="formProductoTitulo">EcoMarket SPA - Nuevo Producto</h2>
+        <form id="formProducto">
+          <input type="hidden" id="formProductoId">
+          <label>Nombre del producto <span class="required">*</span>
+            <input type="text" id="formNombre" required>
+          </label>
+          <label>Categoría <span class="required">*</span>
+            <select id="formCategoria" required>
+              <option value="">Seleccionar</option>
+              <option>Cuidado</option>
+              <option>Hogar</option>
+            </select>
+          </label>
+          <label>Descripción
+            <textarea rows="4" id="formDescripcion"></textarea>
+          </label>
+          <label>Precio unitario <span class="required">*</span>
+            <div style="display:flex;align-items:center;">
+              <span style="margin-right:4px;">$</span>
+              <input type="number" min="1" id="formPrecio" required>
+            </div>
+          </label>
+          <label>Stock inicial <span class="required">*</span>
+            <input type="number" min="0" id="formStock" required>
+          </label>
+          <label>Stock mínimo
+            <input type="number" min="0" id="formMinimo">
+          </label>
+          <label>Proveedor
+            <select id="formProveedor">
+              <option>Seleccionar</option>
+              <option>EcoClean SpA</option>
+              <option>BioVerde</option>
+              <option>EcoWood</option>
+            </select>
+          </label>
+          <label>Imagen del producto
+            <input type="file" id="formImagen">
+          </label>
+          <div class="form-actions">
+            <button type="reset"><i class="fas fa-times"></i> Cancelar</button>
+            <button type="submit" id="formProductoBtn"><i class="fas fa-save"></i> Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="container hidden" id="alertasView">
+    <div class="actions">
+      <button class="back" onclick="showView('mainView')"><i class="fas fa-arrow-left"></i> Volver</button>
+    </div>
+    <h2>EcoMarket SPA - Alertas de Stock Bajo</h2>
+    <div class="toolbar">
+      <label>Filtrar por:
+        <select id="alertaFiltroCategoria">
+          <option value="">Todas</option>
+          <option>Cuidado</option>
+          <option>Hogar</option>
+        </select>
+      </label>
+      <label>Ordenar por:
+        <select id="alertaOrdenar">
+          <option value="urgencia">Urgencia</option>
+          <option value="stock">Stock</option>
+        </select>
+      </label>
+    </div>
+    <table id="alertasTable">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Stock</th>
+          <th>Mínimo</th>
+          <th>Proveedor</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="summary" id="alertasResumen"></div>
+  </div>
+
+  <script>
+    // --- Datos de ejemplo ---
+    let productos = [
+      { id: 1, nombre: "Shampoo Ecológico", categoria: "Cuidado", precio: 5990, stock: 45, minimo: 10, proveedor: "EcoClean SpA", descripcion: "Shampoo ecológico biodegradable, libre de sulfatos y parabenos. Envase 100% reciclable.", imagen: "", historial: [
+        {fecha: "15/03/25", tipo: "Ingreso", cantidad: "+50", usuario: "María Gómez"},
+        {fecha: "10/03/25", tipo: "Venta", cantidad: "-3", usuario: "Juan Pérez"},
+        {fecha: "05/03/25", tipo: "Venta", cantidad: "-2", usuario: "Ana López"}
+      ]},
+      { id: 2, nombre: "Detergente", categoria: "Hogar", precio: 4500, stock: 12, minimo: 15, proveedor: "EcoClean", descripcion: "Detergente ecológico para ropa y superficies.", imagen: "", historial: [] },
+      { id: 3, nombre: "Té orgánico", categoria: "Cuidado", precio: 2990, stock: 8, minimo: 10, proveedor: "BioVerde", descripcion: "Té orgánico de hierbas seleccionadas.", imagen: "", historial: [] },
+      { id: 4, nombre: "Cepillo bambú", categoria: "Cuidado", precio: 3500, stock: 2, minimo: 5, proveedor: "EcoWood", descripcion: "Cepillo de dientes de bambú biodegradable.", imagen: "", historial: [] }
+    ];
+    let usuario = null;
+    let detalleProductoId = null;
+    let editandoProductoId = null;
+
+    // --- Login ---
+    document.getElementById('loginForm').onsubmit = function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value;
+      if (email === "gerente@ecomarket.cl" && pass === "password123") {
+        usuario = { rol: "gerente", nombre: "Gerente", email };
+        iniciarSesion();
+      } else if (email === "empleado@ecomarket.cl" && pass === "password123") {
+        usuario = { rol: "empleado", nombre: "Empleado", email };
+        iniciarSesion();
+      } else {
+        document.getElementById('loginError').style.display = "block";
+      }
+    };
+    function iniciarSesion() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('mainView').classList.remove('hidden');
+      document.getElementById('userInfo').textContent = usuario.nombre + " (" + usuario.rol + ")";
+      document.getElementById('btnNuevoProducto').style.display = usuario.rol === "gerente" ? "" : "none";
+      renderTablaProductos();
+    }
+    function logout() {
+      usuario = null;
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('mainView').classList.add('hidden');
+      document.getElementById('detalleView').classList.add('hidden');
+      document.getElementById('formProductoView').classList.add('hidden');
+      document.getElementById('alertasView').classList.add('hidden');
+      document.getElementById('loginForm').reset();
+      document.getElementById('loginError').style.display = "none";
+    }
+
+    // --- Navegación ---
+    function showView(view) {
+      document.getElementById('mainView').classList.add('hidden');
+      document.getElementById('detalleView').classList.add('hidden');
+      document.getElementById('formProductoView').classList.add('hidden');
+      document.getElementById('alertasView').classList.add('hidden');
+      document.getElementById(view).classList.remove('hidden');
+      if (view === 'mainView') renderTablaProductos();
+      if (view === 'alertasView') renderAlertas();
+      if (view === 'detalleView') renderDetalle(detalleProductoId);
+      if (view === 'formProductoView') document.getElementById('formProducto').reset();
+    }
+
+    // --- Tabla de productos ---
+    function renderTablaProductos() {
+      const tbody = document.querySelector("#productTable tbody");
+      tbody.innerHTML = "";
+      const search = document.getElementById("searchInput").value?.toLowerCase() || "";
+      productos.filter(p =>
+        p.nombre.toLowerCase().includes(search) ||
+        p.categoria.toLowerCase().includes(search)
+      ).forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.nombre}</td>
+          <td>${p.categoria}</td>
+          <td>$${p.precio.toLocaleString()}</td>
+          <td class="${p.stock <= (p.minimo || 0) ? 'low-stock' : ''}">
+            ${p.stock} ${p.stock <= (p.minimo || 0) ? '<i class="fas fa-triangle-exclamation warning"></i>' : ''}
+          </td>
+          <td>
+            <i class="fas fa-eye edit" title="Ver detalle" onclick="verDetalle(${p.id})"></i>
+            ${usuario.rol === "gerente" ? `
+              <i class="fas fa-pen edit" title="Editar" onclick="abrirFormularioEdicion(${p.id})"></i>
+              <i class="fas fa-trash delete" title="Eliminar" onclick="eliminarProducto(${p.id})"></i>
+            ` : ""}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById("searchInput").addEventListener("input", renderTablaProductos);
+
+    // --- Detalle de producto ---
+    function verDetalle(id) {
+      detalleProductoId = id;
+      showView('detalleView');
+    }
+    function renderDetalle(id) {
+      const p = productos.find(x => x.id === id);
+      document.getElementById('btnEditarDetalle').style.display = usuario.rol === "gerente" ? "" : "none";
+      document.getElementById('btnEliminarDetalle').style.display = usuario.rol === "gerente" ? "" : "none";
+      document.getElementById('detalleTable').innerHTML = `
+        <tr>
+          <td rowspan="7" style="width:130px;">
+            <div class="product-img"><i class="fas fa-leaf"></i></div>
+          </td>
+          <td><b>Nombre:</b> ${p.nombre}</td>
+        </tr>
+        <tr><td><b>ID:</b> PRD-${String(p.id).padStart(3, "0")}</td></tr>
+        <tr><td><b>Categoría:</b> ${p.categoria}</td></tr>
+        <tr><td><b>Precio:</b> $${p.precio.toLocaleString()}</td></tr>
+        <tr><td><b>Stock actual:</b> ${p.stock}</td></tr>
+        <tr><td><b>Stock mínimo:</b> ${p.minimo || 0}</td></tr>
+        <tr><td><b>Proveedor:</b> ${p.proveedor || "-"}</td></tr>
+        <tr><td colspan="2"><b>Fecha último ingreso:</b> 15/03/25</td></tr>
+      `;
+      document.getElementById('detalleDesc').innerHTML = `<b>Descripción:</b><br>${p.descripcion || "-"}`;
+      let hist = p.historial && p.historial.length ? p.historial : [{fecha:"-",tipo:"-",cantidad:"-",usuario:"-"}];
+      document.getElementById('detalleHistorial').innerHTML = `
+        <tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Usuario</th></tr>
+        ${hist.map(h=>`<tr><td>${h.fecha}</td><td>${h.tipo}</td><td>${h.cantidad}</td><td>${h.usuario}</td></tr>`).join("")}
+      `;
+    }
+
+    // --- Formulario de producto (Agregar/Editar) ---
+    function abrirFormularioNuevo() {
+      editandoProductoId = null;
+      document.getElementById('formProductoTitulo').textContent = "EcoMarket SPA - Nuevo Producto";
+      document.getElementById('formProductoBtn').innerHTML = '<i class="fas fa-save"></i> Guardar';
+      document.getElementById('formProducto').reset();
+      document.getElementById('formProductoId').value = "";
+      showView('formProductoView');
+    }
+    function abrirFormularioEdicion(id) {
+      editandoProductoId = id;
+      const p = productos.find(x => x.id === id);
+      document.getElementById('formProductoTitulo').textContent = "EcoMarket SPA - Editar Producto";
+      document.getElementById('formProductoBtn').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+      document.getElementById('formProductoId').value = p.id;
+      document.getElementById('formNombre').value = p.nombre;
+      document.getElementById('formCategoria').value = p.categoria;
+      document.getElementById('formDescripcion').value = p.descripcion || "";
+      document.getElementById('formPrecio').value = p.precio;
+      document.getElementById('formStock').value = p.stock;
+      document.getElementById('formMinimo').value = p.minimo || "";
+      document.getElementById('formProveedor').value = p.proveedor || "Seleccionar";
+      showView('formProductoView');
+    }
+    document.getElementById('formProducto').onsubmit = function(e) {
+      e.preventDefault();
+      const id = document.getElementById('formProductoId').value;
+      const nombre = document.getElementById('formNombre').value;
+      const categoria = document.getElementById('formCategoria').value;
+      const descripcion = document.getElementById('formDescripcion').value;
+      const precio = parseInt(document.getElementById('formPrecio').value);
+      const stock = parseInt(document.getElementById('formStock').value);
+      const minimo = parseInt(document.getElementById('formMinimo').value) || 0;
+      const proveedor = document.getElementById('formProveedor').value;
+      if (id) {
+        // Editar
+        const idx = productos.findIndex(p => p.id == id);
+        if (idx !== -1) {
+          productos[idx] = {
+            ...productos[idx],
+            nombre, categoria, descripcion, precio, stock, minimo, proveedor
+          };
+        }
+      } else {
+        // Nuevo
+        productos.push({
+          id: productos.length ? Math.max(...productos.map(p=>p.id))+1 : 1,
+          nombre, categoria, precio, stock, minimo, proveedor, descripcion, imagen: "", historial: []
+        });
+      }
+      showView('mainView');
+    };
+
+    // --- Eliminar producto ---
+    function eliminarProducto(id) {
+      if (confirm("¿Seguro que deseas eliminar este producto?")) {
+        productos = productos.filter(p => p.id !== id);
+        showView('mainView');
+      }
+    }
+
+    // --- Alertas de stock bajo ---
+    function renderAlertas() {
+      const tbody = document.querySelector("#alertasTable tbody");
+      tbody.innerHTML = "";
+      const filtro = document.getElementById('alertaFiltroCategoria').value;
+      let alertas = productos.filter(p => p.stock <= (p.minimo || 0));
+      if (filtro) alertas = alertas.filter(p => p.categoria === filtro);
+      // Ordenar
+      if (document.getElementById('alertaOrdenar').value === "stock") {
+        alertas.sort((a,b)=>a.stock-b.stock);
+      }
+      let urgentes = 0, proximos = 0;
+      alertas.forEach(p => {
+        let tipo = p.stock <= (p.minimo || 0) ? "urgente" : "proximo";
+        if (tipo === "urgente") urgentes++;
+        else proximos++;
+        tbody.innerHTML += `
+          <tr>
+            <td>
+              ${p.nombre}
+              <div class="alert-urgente"><i class="fas fa-circle"></i> Urgente</div>
+            </td>
+            <td>${p.stock}</td>
+            <td>${p.minimo || 0}</td>
+            <td>
+              ${p.proveedor || "-"}<br>
+              <span class="phone"><i class="fas fa-phone"></i></span>956789012
+            </td>
+            <td class="actions">
+              ${usuario.rol === "gerente" ? `
+                <button><i class="fas fa-truck"></i> Pedir</button>
+                <button><i class="fas fa-sliders-h"></i> Ajustar</button>
+              ` : "-"}
+            </td>
+          </tr>
+        `;
+      });
+      document.getElementById('alertasResumen').innerHTML = `<b>Resumen:</b> ${urgentes} productos urgentes, ${proximos} próximos a agotarse`;
+    }
+    document.getElementById('alertaFiltroCategoria').onchange = renderAlertas;
+    document.getElementById('alertaOrdenar').onchange = renderAlertas;
+
+    // --- Inicialización ---
+    // (Nada que hacer, todo se activa tras login)
+  </script>
+</body>
+</html>
